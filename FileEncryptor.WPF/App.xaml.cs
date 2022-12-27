@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FileEncryptor.WPF.Services;
+using FileEncryptor.WPF.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Windows;
@@ -11,10 +13,11 @@ namespace FileEncryptor.WPF
 
         public static IHost Host => __host ??= Program.CreateHostBuilder(Environment.GetCommandLineArgs()).Build();
 
-        public static void ConfigureServices(HostBuilderContext host, IServiceCollection services)
-        {
+        public static IServiceProvider Services => Host.Services;
 
-        }
+        public static void ConfigureServices(HostBuilderContext host, IServiceCollection services) => services
+            .AddServices()
+            .AddViewModels();
 
         protected override async void OnStartup(StartupEventArgs e)
         {
