@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace FileEncryptor.WPF.VIewModels.Base
 {
-    internal abstract class ViewModel : INotifyPropertyChanged
+    internal class ViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
