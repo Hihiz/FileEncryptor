@@ -7,7 +7,22 @@
 DataContext="{Binding MainWindowModel, Source={StaticResource Locator}}"
         mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800">
-    <Grid>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Выход"/>
+            </MenuItem>
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
 
-    </Grid>
+            <StatusBarItem DockPanel.Dock="Right">
+                <ResizeGrip/>
+            </StatusBarItem>
+
+            <StatusBarItem Content="Готов!"/>
+
+        </StatusBar>
+        <Grid>
+        </Grid>
+    </DockPanel>
 </Window>
