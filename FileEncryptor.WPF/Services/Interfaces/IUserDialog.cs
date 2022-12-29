@@ -2,6 +2,7 @@
 {
     internal interface IUserDialog
     {
-
+        bool OpenFile(string Title, out string SelectedFile, string Filter = "Все файлы (*.*)|*.*");
+        bool OpenFiles(string Title, out string SelectedFiles, string Filter = "Все файлы (*.*)|*.*");
     }
 }
