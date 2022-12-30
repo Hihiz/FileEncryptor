@@ -44,5 +44,7 @@ namespace FileEncryptor.WPF.Services
 
             return true;
         }
+
+       
     }
 }
