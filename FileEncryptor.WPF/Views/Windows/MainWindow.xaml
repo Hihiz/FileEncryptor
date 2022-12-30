@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FileEncryptor.WPF"
         DataContext="{Binding MainWindowModel, Source={StaticResource Locator}}"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="450" Width="800">
+        Title="{Binding Title}" Height="250" Width="450">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Файл">
@@ -53,18 +53,28 @@
             <TextBlock Grid.Column="0" Grid.Row="0" Text="Пароль:"/>
             <TextBox Grid.Column="1" Grid.Row="0" Text="123"/>
 
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="Файл"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="Файл" HorizontalAlignment="Left"/>
             <DockPanel Grid.Column="1" Grid.Row="1">
-                <Button Content="Выбор" DockPanel.Dock="Right" Padding="10, 0" Command="{Binding SelectedFileCommand}"/>
+                <Button Content="Выбор" DockPanel.Dock="Right" Padding="10, 0" Margin="0, 0, 3, 0"
+                        Command="{Binding SelectedFileCommand}"/>
                 <TextBox IsReadOnly="True" BorderThickness="0" 
                          Text="{Binding SelectedFile.Name, Mode=OneWay}"
                          ToolTip="{Binding SelectedFile.FullName}"/>
             </DockPanel>
 
-            <TextBlock Grid.Column="0" Grid.Row="2" Text="Размер"/>
+            <TextBlock Grid.Column="0" Grid.Row="2" Text="Размер" HorizontalAlignment="Left"/>
             <TextBox Grid.Column="1" Grid.Row="2" IsReadOnly="True"
                      Text="{Binding SelectedFile.Length, Mode=OneWay}"
                      BorderThickness="0"/>
+
+            <UniformGrid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                         Rows="1" VerticalAlignment="Top"
+                         HorizontalAlignment="Center"
+                         Margin="0, 10, 0, 0">
+
+                <Button Content="Зашифровать" Margin="5" Padding="30, 10" Command="{Binding EncryptCommand}"/>
+                <Button Content="Расшифровать" Margin="5" Command="{Binding DecryptCommand}"/>
+            </UniformGrid>
         </Grid>
     </DockPanel>
 </Window>
