@@ -132,6 +132,8 @@ namespace FileEncryptor.WPF.Services
                         Cancel.ThrowIfCancellationRequested();
                     }
 
+                    Thread.Sleep(10);
+
                 } while (reader > 0);
 
                 destination.FlushFinalBlock();

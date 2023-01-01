@@ -1,7 +1,10 @@
 ﻿using FileEncryptor.WPF.Services.Interfaces;
+using FileEncryptor.WPF.Views.Windows;
 using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 
 namespace FileEncryptor.WPF.Services
@@ -70,5 +73,13 @@ namespace FileEncryptor.WPF.Services
         public void Information(string Title, string Message) => MessageBox.Show(Message, Title, MessageBoxButton.OK, MessageBoxImage.Information);
         public void Warning(string Title, string Message) => MessageBox.Show(Message, Title, MessageBoxButton.OK, MessageBoxImage.Warning);
         public void Error(string Title, string Message) => MessageBox.Show(Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+
+        public (IProgress<double> Progress, IProgress<string> Status, CancellationToken Cancel, Action Close) ShowProgress(string Title)
+        {
+            var progressWindow = new ProgressWindow { Title = Title, Owner = App.FocusedWindow, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+            progressWindow.Show();
+
+            return (progressWindow.ProgressInformer, progressWindow.StatusInformer, progressWindow.Cancel, progressWindow.Close);
+        }
     }
 }

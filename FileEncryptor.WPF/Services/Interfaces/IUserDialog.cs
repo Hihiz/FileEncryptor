@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace FileEncryptor.WPF.Services.Interfaces
 {
@@ -10,5 +12,6 @@ namespace FileEncryptor.WPF.Services.Interfaces
         void Information(string Title, string Message);
         void Warning(string Title, string Message);
         void Error(string Title, string Message);
+        (IProgress<double> Progress, IProgress<string> Status, CancellationToken Cancel, Action Close) ShowProgress(string Title);
     }
 }
