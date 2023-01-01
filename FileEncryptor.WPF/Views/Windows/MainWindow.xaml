@@ -19,6 +19,25 @@
                 <ResizeGrip/>
             </StatusBarItem>
 
+            <StatusBarItem DockPanel.Dock="Right">
+                <DockPanel>
+                    <DockPanel.Style>
+                        <Style TargetType="DockPanel">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ProgressValue}" Value="0">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ProgressValue}" Value="1">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DockPanel.Style>
+                    <TextBlock DockPanel.Dock="Right" MinWidth="39" TextAlignment="Right" Text="{Binding ProgressValue, StringFormat=p1}" />
+                    <ProgressBar Width="120" Height="10" Maximum="1" Value="{Binding ProgressValue}"/>
+                </DockPanel>
+            </StatusBarItem>
+
             <StatusBarItem Content="Готов!"/>
 
         </StatusBar>

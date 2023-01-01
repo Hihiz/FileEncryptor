@@ -104,10 +104,11 @@ namespace FileEncryptor.WPF.Services
                 await using var destination = new CryptoStream(destinationEncrypted, encryptor, CryptoStreamMode.Write);
                 await using var source = File.OpenRead(SourcePath);
 
-                var file_length = source.Length;
+                var fileLength = source.Length;
 
                 int reader;
                 byte[] buffer = new byte[BufferLength];
+                var lastPercent = 0.0;
 
                 do
                 {
@@ -116,7 +117,12 @@ namespace FileEncryptor.WPF.Services
                     await destination.WriteAsync(buffer, 0, reader, Cancel).ConfigureAwait(false);
 
                     var position = source.Position;
-                    Progress?.Report((double)position / file_length);
+                    var percent = (double)position / fileLength;
+                    if (percent - lastPercent >= 0.001)
+                    {
+                        Progress?.Report(percent);
+                        lastPercent = percent;
+                    }
 
                     Thread.Sleep(1);
 
@@ -134,8 +140,8 @@ namespace FileEncryptor.WPF.Services
             }
             catch (OperationCanceledException)
             {
-                File.Delete(DestinationPath);
-                throw;
+                //File.Delete(DestinationPath);
+                Progress?.Report(0);
             }
             catch (Exception error)
             {
@@ -155,22 +161,30 @@ namespace FileEncryptor.WPF.Services
 
             try
             {
-                await using var destination_decrypted = File.Create(DestinationPath, BufferLength);
-                await using var destination = new CryptoStream(destination_decrypted, decryptor, CryptoStreamMode.Write);
-                await using var encrypted_source = File.OpenRead(SourcePath);
+                await using var destinationDecrypted = File.Create(DestinationPath, BufferLength);
+                await using var destination = new CryptoStream(destinationDecrypted, decryptor, CryptoStreamMode.Write);
+                await using var encryptedSource = File.OpenRead(SourcePath);
 
-                var file_length = encrypted_source.Length;
+                var fileLength = encryptedSource.Length;
 
                 var buffer = new byte[BufferLength];
                 int readed;
+                var lastPercent = 0.0;
+
                 do
                 {
-                    readed = await encrypted_source.ReadAsync(buffer, 0, BufferLength, Cancel).ConfigureAwait(false);
+                    readed = await encryptedSource.ReadAsync(buffer, 0, BufferLength, Cancel).ConfigureAwait(false);
 
                     await destination.WriteAsync(buffer, 0, readed, Cancel).ConfigureAwait(false);
 
-                    var position = encrypted_source.Position;
-                    Progress?.Report((double)position / file_length);
+                    var position = encryptedSource.Position;
+
+                    var percent = (double)position / fileLength;
+                    if (percent - lastPercent >= 0.001)
+                    {
+                        Progress?.Report(percent);
+                        lastPercent = percent;
+                    }
 
                     Cancel.ThrowIfCancellationRequested();
                 }
@@ -185,10 +199,13 @@ namespace FileEncryptor.WPF.Services
                     //return Task.FromResult(false);
                     return false;
                 }
+
+                Progress?.Report(1);
             }
             catch (OperationCanceledException)
             {
-                File.Delete(DestinationPath);
+                //File.Delete(DestinationPath);
+                Progress?.Report(0);
                 throw;
             }
 
@@ -196,6 +213,6 @@ namespace FileEncryptor.WPF.Services
             return true;
         }
 
-     
+
     }
 }
