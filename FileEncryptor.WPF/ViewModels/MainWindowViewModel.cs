@@ -1,6 +1,7 @@
 ﻿using FileEncryptor.WPF.Infrastructure.Commands;
 using FileEncryptor.WPF.Services.Interfaces;
 using FileEncryptor.WPF.VIewModels.Base;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
 
@@ -8,7 +9,10 @@ namespace FileEncryptor.WPF.ViewModels
 {
     internal class MainWindowViewModel : ViewModel
     {
-        private readonly IUserDialog _userDialog;
+        private const string _EncryptedFileSuffix = ".encrypted";
+
+        private readonly IUserDialog _UserDialog;
+        private readonly IEncryptor _Encryptor;
 
         #region Свойство Title - Заголовок окна
 
@@ -44,7 +48,7 @@ namespace FileEncryptor.WPF.ViewModels
 
         private void OnSelectedFileCommand()
         {
-            if (!_userDialog.OpenFile("Выбор файла для шифрования", out var filePath)) return;
+            if (!_UserDialog.OpenFile("Выбор файла для шифрования", out var filePath)) return;
             var selectedFile = new FileInfo(filePath);
 
             SelectedFile = selectedFile.Exists ? selectedFile : null;
@@ -63,6 +67,17 @@ namespace FileEncryptor.WPF.ViewModels
         {
             var file = p as FileInfo ?? SelectedFile;
             if (file is null) return;
+
+            var defaultFile = file.FullName + _EncryptedFileSuffix;
+            if (!_UserDialog.SaveFile("Выбор файла для сохранения", out var destinationPath, defaultFile)) return;
+
+            var timer = Stopwatch.StartNew();
+
+            _Encryptor.Encrypt(file.FullName, destinationPath, Password);
+
+            timer.Stop();
+
+            _UserDialog.Information("Шифрование", $"Шифрование файла успешно завершено за {timer.Elapsed.TotalSeconds:0.##}");
         }
 
         #endregion
@@ -79,15 +94,30 @@ namespace FileEncryptor.WPF.ViewModels
         {
             var file = p as FileInfo ?? SelectedFile;
             if (file is null) return;
+
+            var defaultFile = file.FullName.EndsWith(_EncryptedFileSuffix) ? file.FullName.Substring(0, file.FullName.Length - _EncryptedFileSuffix.Length) : file.FullName;
+            if (!_UserDialog.SaveFile("Выбор файла для сохранения", out var destinationPath, defaultFile)) return;
+
+            var timer = Stopwatch.StartNew();
+
+            var success = _Encryptor.Decrypt(file.FullName, destinationPath, Password);
+
+            timer.Stop();
+
+            if (success)
+                _UserDialog.Information("Дешифрование", $"Дешифровка файла выполнено успешно за {timer.Elapsed.TotalSeconds:0.##}");
+            else
+                _UserDialog.Warning("Шифрование", "Ошибка при дешифровке файла: указан неверный пароль");
         }
 
         #endregion
 
         #endregion
 
-        public MainWindowViewModel(IUserDialog UserDialog)
+        public MainWindowViewModel(IUserDialog userDialog, IEncryptor encryptor)
         {
-            _userDialog = UserDialog;
+            _UserDialog = userDialog;
+            _Encryptor = encryptor;
         }
     }
 }

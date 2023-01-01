@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace FileEncryptor.WPF.Services
 {
@@ -45,6 +46,29 @@ namespace FileEncryptor.WPF.Services
             return true;
         }
 
-       
+        public bool SaveFile(string Title, out string SelectedFile, string DefaultFileName = null, string Filter = "Все файлы (*.*)|*.*")
+        {
+            var fileDialog = new SaveFileDialog
+            {
+                Title = Title,
+                Filter = Filter
+            };
+            if (!string.IsNullOrWhiteSpace(DefaultFileName))
+                fileDialog.FileName = DefaultFileName;
+
+            if (fileDialog.ShowDialog() != true)
+            {
+                SelectedFile = null;
+                return false;
+            }
+
+            SelectedFile = fileDialog.FileName;
+
+            return true;
+        }
+
+        public void Information(string Title, string Message) => MessageBox.Show(Message, Title, MessageBoxButton.OK, MessageBoxImage.Information);
+        public void Warning(string Title, string Message) => MessageBox.Show(Message, Title, MessageBoxButton.OK, MessageBoxImage.Warning);
+        public void Error(string Title, string Message) => MessageBox.Show(Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }
